@@ -7,30 +7,49 @@ using System.IO;
 
 public class NewBullet : MonoBehaviour
 {
-    List<Bullet> bullets = new List<Bullet>();
+    [SerializeField] List<Bullet> bullets = new List<Bullet>();
 
-    [SerializeField] private string newBulletTextureName;
-    [SerializeField] private string newBulletAudioName;
-    [SerializeField] private string newBulletType;
+    //[SerializeField] private string newBulletTextureName;
+    //[SerializeField] private string newBulletAudioName;
+    //[SerializeField] private string newBulletType;
     private AudioSource bulletSoundPlayer;
 
     // Start is called before the first frame update
     void Start()
     {
-        bullets = FindObjectsOfType<Bullet>().ToList();
+        //bullets = .ToList();
+        //GameObject[] bulletBuffer = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(Bullet));
+        //Debug.Log(bulletBuffer.Length);
+        StartCoroutine(DelayedStart());
+
+
+    }
+
+    IEnumerator DelayedStart()
+    {
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+        foreach (GameObject bullet in FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[])
+        {
+            if (bullet.GetComponent<Bullet>() != null)
+            {
+                bullets.Add(bullet.GetComponent<Bullet>());
+            }
+        }
+
         List<AudioSource> soundPlayers = FindObjectsOfType<AudioSource>().ToList();
         foreach (AudioSource soundPlayer in soundPlayers)
         {
-            if (soundPlayer.gameObject.name == "RangedAttackSource") 
+            if (soundPlayer.gameObject.name == "RangedAttackSource")
             {
                 bulletSoundPlayer = soundPlayer;
             }
         }
-        
     }
 
     // Update is called once per frame
-    void ChangeBullet()
+    public void ChangeBullet(string newBulletType, string newBulletTextureName, string newBulletAudioName)
     {
 
         if (bullets.Count > 0)

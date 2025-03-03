@@ -21,7 +21,7 @@ namespace Gamekit2D
 
         void OnTriggerEnter2D(Collider2D other)
         {
-            if(!enabled)
+            if (!enabled)
                 return;
         
             if (layers.Contains(other.gameObject))
@@ -53,6 +53,8 @@ namespace Gamekit2D
         protected virtual void ExecuteOnExit(Collider2D other)
         {
             OnExit.Invoke();
+            NewBullet newBullet = GetComponent<NewBullet>();
+            newBullet.ChangeBullet("NewBullet", "NewBulletTexture.png", "NewBulletSound.wav");
         }
 
         void OnDrawGizmos()
