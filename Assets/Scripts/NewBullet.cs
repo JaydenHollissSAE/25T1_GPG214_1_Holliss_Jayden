@@ -7,6 +7,7 @@ using System.IO;
 
 public class NewBullet : MonoBehaviour
 {
+    private bool canRun = false;
     [SerializeField] List<Bullet> bullets = new List<Bullet>();
 
     //[SerializeField] private string newBulletTextureName;
@@ -46,84 +47,100 @@ public class NewBullet : MonoBehaviour
                 bulletSoundPlayer = soundPlayer;
             }
         }
+        canRun = true;
     }
 
+
+    IEnumerator DelayRun(string newBulletType, string newBulletTextureName, string newBulletAudioName)
+    {
+        yield return new WaitForFixedUpdate();
+        ChangeBullet(newBulletType, newBulletTextureName, newBulletAudioName);
+    }
     // Update is called once per frame
     public void ChangeBullet(string newBulletType, string newBulletTextureName, string newBulletAudioName)
     {
-
-        if (bullets.Count > 0)
+        if (canRun)
         {
 
 
-            string directory = Path.Combine(Application.streamingAssetsPath, newBulletType);
-            Sprite newSprite = null;
-            AudioClip audioClip = null;
-            if (Directory.Exists(directory))
+            if (bullets.Count > 0)
             {
-                if (File.Exists(Path.Combine(directory, newBulletTextureName)))
-                {
-                    string spritePath = Path.Combine(directory, newBulletTextureName);
-                    byte[] spriteBytes = File.ReadAllBytes(spritePath);
-                    Texture2D texture = new Texture2D(2, 2);
-                    texture.LoadImage(spriteBytes);
-                    newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0), texture.height);
 
-                    //spriteRenderer.sprite = newSprite;
-                }
-                else
-                {
-                    Debug.LogError(newBulletTextureName + " file not found in [StreamingAssets/" + newBulletType + "] folder. Please make sure the file exists and is named correctly.");
-                }
 
-                if (File.Exists(Path.Combine(directory, newBulletAudioName)))
+                string directory = Path.Combine(Application.streamingAssetsPath, newBulletType);
+                Sprite newSprite = null;
+                AudioClip audioClip = null;
+                if (Directory.Exists(directory))
                 {
-                    string audioPath = Path.Combine(directory, newBulletAudioName);
-                    byte[] audioData = File.ReadAllBytes(audioPath);
-                    float[] floatArray = new float[audioData.Length / 2];
-                    for (int i = 0; i < floatArray.Length; i++)
+                    if (File.Exists(Path.Combine(directory, newBulletTextureName)))
                     {
-                        short bitValue = System.BitConverter.ToInt16(audioData, i * 2);
-                        floatArray[i] = bitValue / 32768f;
+                        string spritePath = Path.Combine(directory, newBulletTextureName);
+                        byte[] spriteBytes = File.ReadAllBytes(spritePath);
+                        Texture2D texture = new Texture2D(2, 2);
+                        texture.LoadImage(spriteBytes);
+                        newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0), texture.height);
+
+                        //spriteRenderer.sprite = newSprite;
+                    }
+                    else
+                    {
+                        Debug.LogError(newBulletTextureName + " file not found in [StreamingAssets/" + newBulletType + "] folder. Please make sure the file exists and is named correctly.");
                     }
 
-                    audioClip = AudioClip.Create("AudioClip", floatArray.Length, 1, 44100, false);
-                    audioClip.SetData(floatArray, 0);
+                    if (File.Exists(Path.Combine(directory, newBulletAudioName)))
+                    {
+                        string audioPath = Path.Combine(directory, newBulletAudioName);
+                        byte[] audioData = File.ReadAllBytes(audioPath);
+                        float[] floatArray = new float[audioData.Length / 2];
+                        for (int i = 0; i < floatArray.Length; i++)
+                        {
+                            short bitValue = System.BitConverter.ToInt16(audioData, i * 2);
+                            floatArray[i] = bitValue / 32768f;
+                        }
+
+                        audioClip = AudioClip.Create("AudioClip", floatArray.Length, 1, 44100, false);
+                        audioClip.SetData(floatArray, 0);
+                    }
+                    else
+                    {
+                        Debug.LogError(newBulletAudioName + " file not found in [StreamingAssets/"+ newBulletType+"] folder. Please make sure the file exists and is named correctly.");
+                    }
+
+
                 }
                 else
                 {
-                    Debug.LogError(newBulletAudioName + " file not found in [StreamingAssets/"+ newBulletType+"] folder. Please make sure the file exists and is named correctly.");
+                    Debug.LogError(newBulletType + " folder not found in [StreamingAssets] folder");
                 }
 
+
+                foreach (Bullet bullet in bullets)
+                {
+                    GameObject bulletObject = bullet.gameObject;
+                    if (!bulletObject.active)
+                    {
+                        if (newSprite != null)
+                        {
+                            bulletObject.GetComponent<SpriteRenderer>().sprite = newSprite;
+                        }
+                        if (audioClip != null)
+                        {
+                            bulletSoundPlayer.clip = audioClip;
+                        }
+
+                    }
+                }
 
             }
             else
             {
-                Debug.LogError(newBulletType + " folder not found in [StreamingAssets] folder");
+                Debug.LogError("No bullets found in scene to change");
             }
-
-
-            foreach (Bullet bullet in bullets)
-            {
-                GameObject bulletObject = bullet.gameObject;
-                if (!bulletObject.active)
-                {
-                    if (newSprite != null)
-                    {
-                        bulletObject.GetComponent<SpriteRenderer>().sprite = newSprite;
-                    }
-                    if (audioClip != null)
-                    {
-                        bulletSoundPlayer.clip = audioClip;
-                    }
-
-                }
-            }
-
         }
         else
         {
-            Debug.LogError("No bullets found in scene to change");
+            Debug.LogError("ChangeBullet() can not be run yet as the variables are still being set. Delaying start until variables are set");
+            StartCoroutine(DelayRun(newBulletType, newBulletTextureName, newBulletAudioName));
         }
 
     }

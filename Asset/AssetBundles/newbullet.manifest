@@ -1,0 +1,23 @@
+ManifestFileVersion: 0
+CRC: 716789298
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: a281474f109ffbfccf5c0e63f05eede6
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: ce3b6d18a872ca8039cd5eb3c4fb7ef5
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: a281474f109ffbfccf5c0e63f05eede6
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/NewBullet/NewBulletTexture.png
+- Assets/NewBullet/NewBulletSound.wav
+Dependencies: []
