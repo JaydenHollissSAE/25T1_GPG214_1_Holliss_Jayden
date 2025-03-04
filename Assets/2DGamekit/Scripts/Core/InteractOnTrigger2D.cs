@@ -53,8 +53,11 @@ namespace Gamekit2D
         protected virtual void ExecuteOnExit(Collider2D other)
         {
             OnExit.Invoke();
-            NewBullet newBullet = GetComponent<NewBullet>();
-            newBullet.ChangeBullet("NewBullet", "NewBulletTexture.png", "NewBulletSound.wav");
+            if (GetComponent<NewBullet>() != null)
+            {
+                NewBullet newBullet = GetComponent<NewBullet>();
+                newBullet.ChangeBullet("NewBullet", "NewBulletTexture.png", "NewBulletSound.wav");
+            }
         }
 
         void OnDrawGizmos()
