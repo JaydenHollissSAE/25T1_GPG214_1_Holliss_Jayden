@@ -33,7 +33,7 @@ namespace Gamekit2D
 
         protected bool m_Invulnerable;
         protected float m_InulnerabilityTimer;
-        protected int m_CurrentHealth;
+        public int m_CurrentHealth;
         protected Vector2 m_DamageDirection;
         protected bool m_ResetHealthOnSceneReload;
 

@@ -88,7 +88,7 @@ namespace Gamekit2D
         protected float m_VerticalCameraOffsetTimer;
         protected InventoryController m_InventoryController;
 
-        protected Checkpoint m_LastCheckpoint = null;
+        public Checkpoint m_LastCheckpoint = null;
         protected Vector2 m_StartingPosition = Vector2.zero;
         protected bool m_StartingFacingLeft = false;
 

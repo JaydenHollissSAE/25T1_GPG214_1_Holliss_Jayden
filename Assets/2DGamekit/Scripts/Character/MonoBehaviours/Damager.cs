@@ -37,7 +37,7 @@ namespace Gamekit2D
         public NonDamagableEvent OnNonDamageableHit;
 
         protected bool m_SpriteOriginallyFlipped;
-        protected bool m_CanDamage = true;
+        public bool m_CanDamage = true;
         protected ContactFilter2D m_AttackContactFilter;
         protected Collider2D[] m_AttackOverlapResults = new Collider2D[10];
         protected Transform m_DamagerTransform;
