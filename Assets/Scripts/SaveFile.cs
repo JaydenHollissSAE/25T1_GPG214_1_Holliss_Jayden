@@ -14,6 +14,7 @@ public class SaveFile : MonoBehaviour
     public static SaveFile saveManager;
     public List<string> saveFiles = new List<string>();
     private bool savesLoaded = false;
+    private bool waitingForSave = false;
 
 
     private void Awake()
@@ -43,22 +44,30 @@ public class SaveFile : MonoBehaviour
             {
                 SaveToFile(i, "{}");
             }
-            if (!saveFiles.Contains(savePath))
+            while (waitingForSave)
             {
-                if (saveFiles.Count < i)
+                yield return null;
+            }
+            if (!waitingForSave)
+            {
+                string[] lines = File.ReadAllLines(savePath);
+                string jsonText = "";
+                foreach (string line in lines)
                 {
-                    saveFiles.Add(savePath);
+                    jsonText += line;
                 }
-                else
+                if (!saveFiles.Contains(jsonText))
                 {
-                    string[] lines = File.ReadAllLines(savePath);
-                    string jsonText = "";
-                    foreach (string line in lines)
+                    if (saveFiles.Count < i)
                     {
-                        jsonText += line;
+                        saveFiles.Add(jsonText);
                     }
-                    saveFiles[i] = jsonText;
+                    else
+                    {
+                        saveFiles[i] = jsonText;
+                    }
                 }
+
             }
 
         }
@@ -85,8 +94,9 @@ public class SaveFile : MonoBehaviour
 
     public void SaveToFile(int saveSlot, string data)
     {
-        if (savesLoaded)
+        if ((savesLoaded || && !waitingForSave) || (!savesLoaded && !waitingForSave))
         {
+            waitingForSave = true;
             string savePath = Path.Combine(Application.persistentDataPath, "gameSave" + saveSlot.ToString() + ".json");
             if (!File.Exists(savePath))
             {
@@ -94,6 +104,7 @@ public class SaveFile : MonoBehaviour
             }
             File.WriteAllText(savePath, data);
             saveFiles[saveSlot] = data;
+            waitingForSave = false;
         }
         else
         {
